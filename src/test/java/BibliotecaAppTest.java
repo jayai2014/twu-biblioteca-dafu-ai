@@ -2,6 +2,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
@@ -17,6 +18,9 @@ public class BibliotecaAppTest {
             "id=1|title=Book A|author=Dafu|year=2010|stock=3\n" +
                     "id=2|title=Book B|author=Dafu|year=2011|stock=2\n" +
                     "id=3|title=Book C|author=Dafu|year=2012|stock=1\n";
+    private final String menuOptions = "Enter a number from options below to make a " +
+            "selection: \n" +
+            "1 - List of books\n";
 
     @Before
     public void setUpStreams() {
@@ -46,13 +50,43 @@ public class BibliotecaAppTest {
         assertEquals(initialBookListString, BibliotecaApp.getAllBooksString());
     }
 
+    /**
+     * Test we should return correct menu options string
+     */
     @Test
-    public void testShouldPrintBookListAfterWelcomeMessage() {
+    public void testShouldReturnCorrectMenuString() {
+        assertEquals(menuOptions, BibliotecaApp.getMenuOptions());
+    }
+
+    /**
+     * Test we should return print menu options after welcome message
+     */
+    @Test
+    public void testShouldPrintMenuAfterWelcomeMessage() {
         BibliotecaApp.main(null);
 
-        // By removing the welcome message the book list message should be at
+        // By removing the welcome message the menu options string should be at
         // the beginning
-        assertEquals(initialBookListString,
+        assertEquals(menuOptions,
                 outContent.toString().replace(welcomeMessage, ""));
+    }
+
+    /**
+     * Test we should print book list after we select correct menu option
+     */
+    @Test
+    public void testShouldPrintBookListIfSelectCorrectOption() {
+        // Provide correct menu option input
+        ByteArrayInputStream input = new ByteArrayInputStream("1".getBytes());
+        System.setIn(input);
+
+        BibliotecaApp.main(null);
+
+        // By removing the welcome message & menu options, book list should be
+        // at the beginning
+        assertEquals(initialBookListString,
+                outContent.toString()
+                        .replace(welcomeMessage, "")
+                        .replace(menuOptions, ""));
     }
 }

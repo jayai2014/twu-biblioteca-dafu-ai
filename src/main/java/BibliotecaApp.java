@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class BibliotecaApp {
     /**
@@ -22,8 +23,26 @@ public class BibliotecaApp {
         return booksString.toString();
     }
 
+    /**
+     * Get a menu of options in string
+     */
+    public static String getMenuOptions() {
+        return "Enter a number from options below to make a selection: \n" +
+                "1 - List of books\n";
+    }
+
     public static void main(String[] args) {
         System.out.print(getWelcomeMessage());
-        System.out.print(getAllBooksString());
+        System.out.print(getMenuOptions());
+
+        Scanner in = new Scanner(System.in);
+
+        if (in.hasNextInt()) {
+            int chosenOption = in.nextInt();
+
+            if (chosenOption == 1) {
+                System.out.print(getAllBooksString());
+            }
+        }
     }
 }
