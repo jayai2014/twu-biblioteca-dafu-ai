@@ -14,9 +14,9 @@ public class BibliotecaAppTest {
     private final String welcomeMessage = "Welcome to Biblioteca. " +
             "Your one-stop-shop for great book titles in Bangalore!\n";
     private final String initialBookListString =
-            "id=1, title=Book A, stock=3\n" +
-                    "id=2, title=Book B, stock=2\n" +
-                    "id=3, title=Book C, stock=1\n";
+            "id=1|title=Book A|author=Dafu|year=2010|stock=3\n" +
+                    "id=2|title=Book B|author=Dafu|year=2011|stock=2\n" +
+                    "id=3|title=Book C|author=Dafu|year=2012|stock=1\n";
 
     @Before
     public void setUpStreams() {

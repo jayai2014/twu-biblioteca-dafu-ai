@@ -7,7 +7,7 @@ public class BookTest {
      */
     @Test
     public void testShouldConvertToCorrectString() {
-        Book book = new Book(1, "Book A", 2);
-        assertEquals("id=1, title=Book A, stock=2", book.toString());
+        Book book = new Book(1, "Book A", "Dafu", 2011, 2);
+        assertEquals("id=1|title=Book A|author=Dafu|year=2011|stock=2", book.toString());
     }
 }

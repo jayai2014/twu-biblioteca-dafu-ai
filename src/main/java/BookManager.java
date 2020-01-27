@@ -18,9 +18,9 @@ class BookManager {
      */
     ArrayList<Book> getBooksData() {
         ArrayList<Book> books = new ArrayList<>();
-        books.add(new Book(1, "Book A", 3));
-        books.add(new Book(2, "Book B", 2));
-        books.add(new Book(3, "Book C", 1));
+        books.add(new Book(1, "Book A", "Dafu", 2010, 3));
+        books.add(new Book(2, "Book B", "Dafu", 2011, 2));
+        books.add(new Book(3, "Book C", "Dafu", 2012, 1));
         return books;
     }
 
