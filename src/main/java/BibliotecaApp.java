@@ -31,17 +31,24 @@ public class BibliotecaApp {
                 "1 - List of books\n";
     }
 
+    private static final String invalidOptionMessage =
+            "Please select a valid option!\n";
+
     public static void main(String[] args) {
         System.out.print(getWelcomeMessage());
         System.out.print(getMenuOptions());
 
         Scanner in = new Scanner(System.in);
+        boolean optionSelected = false;
 
-        if (in.hasNextInt()) {
-            int chosenOption = in.nextInt();
+        while (!optionSelected) {
+            String chosenOption = in.next();
 
-            if (chosenOption == 1) {
+            if (chosenOption.equals("1")) {
                 System.out.print(getAllBooksString());
+                optionSelected = true;
+            } else {
+                System.out.print(invalidOptionMessage);
             }
         }
     }

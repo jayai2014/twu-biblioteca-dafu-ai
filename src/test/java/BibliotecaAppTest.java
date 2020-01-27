@@ -37,6 +37,10 @@ public class BibliotecaAppTest {
      */
     @Test
     public void testShouldPrintWelcomeMessageWhenStartApplication() {
+        // Provide a valid menu option to quit
+        ByteArrayInputStream input = new ByteArrayInputStream("1".getBytes());
+        System.setIn(input);
+
         BibliotecaApp.main(null);
 
         assertTrue(outContent.toString().startsWith(welcomeMessage));
@@ -63,12 +67,17 @@ public class BibliotecaAppTest {
      */
     @Test
     public void testShouldPrintMenuAfterWelcomeMessage() {
+        // Provide a valid menu option to quit
+        ByteArrayInputStream input = new ByteArrayInputStream("1".getBytes());
+        System.setIn(input);
+
         BibliotecaApp.main(null);
 
         // By removing the welcome message the menu options string should be at
         // the beginning
-        assertEquals(menuOptions,
-                outContent.toString().replace(welcomeMessage, ""));
+        assertTrue(outContent.toString()
+                        .replace(welcomeMessage, "")
+                        .startsWith(menuOptions));
     }
 
     /**
@@ -88,5 +97,26 @@ public class BibliotecaAppTest {
                 outContent.toString()
                         .replace(welcomeMessage, "")
                         .replace(menuOptions, ""));
+    }
+
+    /**
+     * Test we should print error message if incorrect option is selected
+     */
+    @Test
+    public void testShouldPrintErrorIfSelectIncorrectOption() {
+        // Provide an invalid menu option input to trigger error msg
+        // followed by an valid option to quit
+        ByteArrayInputStream input = new ByteArrayInputStream("2\n1\n".getBytes());
+        System.setIn(input);
+
+        BibliotecaApp.main(null);
+
+        // By removing the welcome message & menu options, book list should be
+        // at the beginning
+        assertTrue(outContent.toString()
+                .replace(welcomeMessage, "")
+                .replace(menuOptions, "")
+                .startsWith("Please select a valid option!\n")
+        );
     }
 }
