@@ -55,18 +55,24 @@ class BookManager {
      * Checkout a book
      * @param bookId id of the book
      */
-    void checkoutBook(int bookId) throws InsufficientBookStockException {
-        books.get(bookId).decrementStock(1);
+    void checkoutBook(int bookId)
+            throws InsufficientBookStockException, BookNotExistException {
+        getBook(bookId).decrementStock(1);
     }
 
     /**
-     * Get a book
+     * Get a book, safely
+     * Avoid using books.get()
      * @param bookId id of the book
      * @return the book associated with thd id
      */
-    Book getBook(int bookId) {
+    Book getBook(int bookId) throws BookNotExistException {
         if (books == null) {
             initialiseBookData();
+        }
+        // Checks we have the book with provided id
+        if (!books.containsKey(bookId)) {
+            throw new BookNotExistException(bookId);
         }
         return books.get(bookId);
     }

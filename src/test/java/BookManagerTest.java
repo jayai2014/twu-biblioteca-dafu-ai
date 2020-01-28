@@ -17,7 +17,7 @@ public class BookManagerTest {
      * book manager
      */
     @Test
-    public void testShouldInitialiseDataWhenGetOneBook() {
+    public void testShouldInitialiseDataWhenGetOneBook() throws BookNotExistException {
         assertNotNull(BookManager.getInstance().getBook(1));
     }
 
@@ -26,7 +26,7 @@ public class BookManagerTest {
      */
     @Test
     public void testShouldUpdateBookWhenCheckoutBook()
-            throws InsufficientBookStockException {
+            throws InsufficientBookStockException, BookNotExistException {
         BookManager bookManager = BookManager.getInstance();
         int bookId = 1;
         Book book = bookManager.getBook(bookId);
@@ -36,5 +36,16 @@ public class BookManagerTest {
 
         // Stock quantity should be updated
         assertSame(prevStock - 1, bookManager.getBook(bookId).getStock());
+    }
+
+    /**
+     * Test we can throw book not exist exception when we supply an invalid
+     * book id to the getBook() method
+     */
+    @Test(expected = BookNotExistException.class)
+    public void testShouldThrowExceptionWhenUseInvalidBookId()
+            throws BookNotExistException {
+        BookManager bookManager = BookManager.getInstance();
+        bookManager.getBook(0);
     }
 }

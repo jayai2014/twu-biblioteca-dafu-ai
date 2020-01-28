@@ -34,8 +34,14 @@ public class BibliotecaApp {
                 "0 - Quit\n";
     }
 
-    private static final String invalidOptionMessage =
+    private static final String INVALID_OPTION_MESSAGE =
             "Please select a valid option!\n";
+
+    private static final String CHECKOUT_SUCCESS_MESSAGE =
+            "Thank you! Enjoy the book\n";
+
+    private static final String CHECKOUT_FAILURE_MESSAGE =
+            "Sorry, that book is not available\n";
 
     public static void main(String[] args) {
         System.out.print(getWelcomeMessage());
@@ -66,7 +72,7 @@ public class BibliotecaApp {
         } else if (chosenOption.startsWith("c")) {
             processBookCheckout(chosenOption.substring(1));
         } else {
-            System.out.print(invalidOptionMessage);
+            System.out.print(INVALID_OPTION_MESSAGE);
         }
         return true;
     }
@@ -76,13 +82,23 @@ public class BibliotecaApp {
      * @param bookIdStr book id in string, which will be validated first
      */
     public static void processBookCheckout(String bookIdStr) {
-        // todo: error handling for int conversion
-        int bookId = Integer.parseInt(bookIdStr);
+        int bookId;
         try {
-            BookManager.getInstance().checkoutBook(1);
-        } catch (InsufficientBookStockException e) {
-            // todo: error handling
-            e.printStackTrace();
+            bookId = Integer.parseInt(bookIdStr);
+        } catch (NumberFormatException e) {
+            // We need to ensure the book id is an integer
+            System.out.print(CHECKOUT_FAILURE_MESSAGE);
+            return;
         }
+
+        try {
+            BookManager.getInstance().checkoutBook(bookId);
+        } catch (InsufficientBookStockException | BookNotExistException e) {
+            // We also need to ensure book id exist and stock is sufficient
+            System.out.print(CHECKOUT_FAILURE_MESSAGE);
+            return;
+        }
+
+        System.out.print(CHECKOUT_SUCCESS_MESSAGE);
     }
 }
