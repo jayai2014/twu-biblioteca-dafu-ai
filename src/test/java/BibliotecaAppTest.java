@@ -20,7 +20,8 @@ public class BibliotecaAppTest {
                     "id=3|title=Book C|author=Dafu|year=2012|stock=1\n";
     private final String menuOptions = "Enter a number from options below to make a " +
             "selection: \n" +
-            "1 - List of books\n";
+            "1 - List of books\n" +
+            "0 - Quit\n";
 
     @Before
     public void setUpStreams() {
@@ -38,7 +39,7 @@ public class BibliotecaAppTest {
     @Test
     public void testShouldPrintWelcomeMessageWhenStartApplication() {
         // Provide a valid menu option to quit
-        ByteArrayInputStream input = new ByteArrayInputStream("1".getBytes());
+        ByteArrayInputStream input = new ByteArrayInputStream("0".getBytes());
         System.setIn(input);
 
         BibliotecaApp.main(null);
@@ -68,7 +69,7 @@ public class BibliotecaAppTest {
     @Test
     public void testShouldPrintMenuAfterWelcomeMessage() {
         // Provide a valid menu option to quit
-        ByteArrayInputStream input = new ByteArrayInputStream("1".getBytes());
+        ByteArrayInputStream input = new ByteArrayInputStream("0".getBytes());
         System.setIn(input);
 
         BibliotecaApp.main(null);
@@ -86,7 +87,8 @@ public class BibliotecaAppTest {
     @Test
     public void testShouldPrintBookListIfSelectCorrectOption() {
         // Provide correct menu option input
-        ByteArrayInputStream input = new ByteArrayInputStream("1".getBytes());
+        // followed by selecting quit option
+        ByteArrayInputStream input = new ByteArrayInputStream("1\n0\n".getBytes());
         System.setIn(input);
 
         BibliotecaApp.main(null);
@@ -105,8 +107,8 @@ public class BibliotecaAppTest {
     @Test
     public void testShouldPrintErrorIfSelectIncorrectOption() {
         // Provide an invalid menu option input to trigger error msg
-        // followed by an valid option to quit
-        ByteArrayInputStream input = new ByteArrayInputStream("2\n1\n".getBytes());
+        // followed by selecting quit option
+        ByteArrayInputStream input = new ByteArrayInputStream("2\n0\n".getBytes());
         System.setIn(input);
 
         BibliotecaApp.main(null);

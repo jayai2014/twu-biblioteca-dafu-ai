@@ -28,7 +28,8 @@ public class BibliotecaApp {
      */
     public static String getMenuOptions() {
         return "Enter a number from options below to make a selection: \n" +
-                "1 - List of books\n";
+                "1 - List of books\n" +
+                "0 - Quit\n";
     }
 
     private static final String invalidOptionMessage =
@@ -39,14 +40,14 @@ public class BibliotecaApp {
         System.out.print(getMenuOptions());
 
         Scanner in = new Scanner(System.in);
-        boolean optionSelected = false;
 
-        while (!optionSelected) {
+        while (true) {
             String chosenOption = in.next();
 
             if (chosenOption.equals("1")) {
                 System.out.print(getAllBooksString());
-                optionSelected = true;
+            } else if (chosenOption.equals("0")) {
+                break;
             } else {
                 System.out.print(invalidOptionMessage);
             }
