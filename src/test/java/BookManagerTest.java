@@ -39,6 +39,22 @@ public class BookManagerTest {
     }
 
     /**
+     * Test book should be updated when we return one book
+     */
+    @Test
+    public void testShouldUpdateBookWhenReturnBook() throws BookNotExistException {
+        BookManager bookManager = BookManager.getInstance();
+        int bookId = 1;
+        Book book = bookManager.getBook(bookId);
+        int prevStock = book.getStock();
+
+        bookManager.returnBook(bookId);
+
+        // Stock quantity should be updated
+        assertSame(prevStock + 1, bookManager.getBook(bookId).getStock());
+    }
+
+    /**
      * Test we can throw book not exist exception when we supply an invalid
      * book id to the getBook() method
      */

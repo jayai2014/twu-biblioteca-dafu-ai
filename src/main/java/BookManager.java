@@ -61,6 +61,14 @@ class BookManager {
     }
 
     /**
+     * Return a book
+     * @param bookId id of the book
+     */
+    void returnBook(int bookId) throws BookNotExistException {
+        getBook(bookId).incrementStock(1);
+    }
+
+    /**
      * Get a book, safely
      * Avoid using books.get()
      * @param bookId id of the book

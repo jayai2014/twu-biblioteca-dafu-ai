@@ -25,7 +25,8 @@ public class BibliotecaAppTest {
             "0 - Quit\n";
     private final String checkoutSuccessMessage = "Thank you! Enjoy the book\n";
     private final String checkoutFailureMessage = "Sorry, that book is not available\n";
-
+    private final String returnSuccessMessage = "Thank you for returning the book\n";
+    private final String returnFailureMessage = "That is not a valid book to return\n";
     @Before
     public void setUpStreams() {
         System.setOut(new PrintStream(outContent));
@@ -136,6 +137,7 @@ public class BibliotecaAppTest {
 
     /**
      * Test we are able to checkout a book successfully when stock is sufficient
+     * (and book id is valid)
      */
     @Test
     public void testShouldAbleToCheckoutBookSuccessfullyWhenStockSufficient() {
@@ -181,7 +183,7 @@ public class BibliotecaAppTest {
     }
 
     /**
-     * Test we are not able to checkout a book when book id
+     * Test we are not able to checkout a book when book id is invalid
      */
     @Test
     public void testShouldNotBeAbleToCheckoutBookWhenBookIdInvalid() {
@@ -203,4 +205,52 @@ public class BibliotecaAppTest {
                         .replace(initialBookListString, "")
         );
     }
+
+    /**
+     * Test we are able to checkout a book successfully
+     * (when book id is valid)
+     */
+    @Test
+    public void testShouldAbleToCheckoutBookSuccessfully() {
+        // Provide an valid menu option input to trigger checking out a book
+        // then quit
+        ByteArrayInputStream input = new ByteArrayInputStream("1\nr1\n0\n".getBytes());
+        System.setIn(input);
+
+        BibliotecaApp.main(null);
+
+        // By removing the welcome message, menu options and initial book list
+        // we should have the success message left
+        assertEquals(returnSuccessMessage,
+                outContent.toString()
+                        .replace(welcomeMessage, "")
+                        .replace(menuOptions, "")
+                        .replace(initialBookListString, "")
+        );
+    }
+
+    /**
+     * Test we are not able to return a book when book id is invalid
+     */
+    @Test
+    public void testShouldNotBeAbleToReturnBookWhenBookIdInvalid() {
+        // Provide invalid menu option input to trigger returning a book
+        // one being book id does not exist
+        // other one being invalid book id format (i.e. non-int)
+        // then quit
+        ByteArrayInputStream input = new ByteArrayInputStream("1\nr0\nra\n0\n".getBytes());
+        System.setIn(input);
+
+        BibliotecaApp.main(null);
+
+        // By removing the welcome message, menu options and initial book list
+        // we should have two failure messages left
+        assertEquals(returnFailureMessage + returnFailureMessage,
+                outContent.toString()
+                        .replace(welcomeMessage, "")
+                        .replace(menuOptions, "")
+                        .replace(initialBookListString, "")
+        );
+    }
+
 }

@@ -43,6 +43,12 @@ public class BibliotecaApp {
     private static final String CHECKOUT_FAILURE_MESSAGE =
             "Sorry, that book is not available\n";
 
+    private static final String RETURN_SUCCESS_MESSAGE =
+            "Thank you for returning the book\n";
+
+    private static final String RETURN_FAILURE_MESSAGE =
+            "That is not a valid book to return\n";
+
     public static void main(String[] args) {
         System.out.print(getWelcomeMessage());
         System.out.print(getMenuOptions());
@@ -71,6 +77,8 @@ public class BibliotecaApp {
             return false;
         } else if (chosenOption.startsWith("c")) {
             processBookCheckout(chosenOption.substring(1));
+        } else if (chosenOption.startsWith("r")) {
+            processBookReturn(chosenOption.substring(1));
         } else {
             System.out.print(INVALID_OPTION_MESSAGE);
         }
@@ -100,5 +108,30 @@ public class BibliotecaApp {
         }
 
         System.out.print(CHECKOUT_SUCCESS_MESSAGE);
+    }
+
+    /**
+     * Process book return
+     * @param bookIdStr book id in string, which will be validated first
+     */
+    public static void processBookReturn(String bookIdStr) {
+        int bookId;
+        try {
+            bookId = Integer.parseInt(bookIdStr);
+        } catch (NumberFormatException e) {
+            // We need to ensure the book id is an integer
+            System.out.print(RETURN_FAILURE_MESSAGE);
+            return;
+        }
+
+        try {
+            BookManager.getInstance().returnBook(bookId);
+        } catch (BookNotExistException e) {
+            // We also need to ensure book id exist and stock is sufficient
+            System.out.print(RETURN_FAILURE_MESSAGE);
+            return;
+        }
+
+        System.out.print(RETURN_SUCCESS_MESSAGE);
     }
 }
