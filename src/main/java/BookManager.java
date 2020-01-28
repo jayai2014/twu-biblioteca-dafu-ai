@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Manager class for books data
@@ -11,7 +12,10 @@ class BookManager {
         return instance;
     }
 
-    private ArrayList<Book> books = null;
+    /**
+     * Use map for fast querying
+     */
+    private HashMap<Integer, Book> books = null;
 
     /**
      * Use data fixtures for now
@@ -25,14 +29,45 @@ class BookManager {
     }
 
     /**
+     * Initialise book data fixtures
+     * Should be called only once in runtime lifetime
+     */
+    void initialiseBookData() {
+        ArrayList<Book> data = getBooksData();
+        books = new HashMap<>();
+        for (Book book: data) {
+            books.put(book.getId(), book);
+        }
+    }
+
+    /**
      * Retrieve all available books.
      * @return list of books
      */
     ArrayList<Book> getAllBooks() {
         if (books == null) {
-            // Initialise fixtures once in runtime
-            books = getBooksData();
+            initialiseBookData();
         }
-        return books;
+        return new ArrayList<>(books.values());
+    }
+
+    /**
+     * Checkout a book
+     * @param bookId id of the book
+     */
+    void checkoutBook(int bookId) throws InsufficientBookStockException {
+        books.get(bookId).decrementStock(1);
+    }
+
+    /**
+     * Get a book
+     * @param bookId id of the book
+     * @return the book associated with thd id
+     */
+    Book getBook(int bookId) {
+        if (books == null) {
+            initialiseBookData();
+        }
+        return books.get(bookId);
     }
 }

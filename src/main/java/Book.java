@@ -55,10 +55,26 @@ public class Book {
         return stock;
     }
 
-    public void setStock(int stock) {
-        this.stock = stock;
+    /**
+     * Increment book stock by quantity
+     * @param quantity quantity to be incremented
+     */
+    public void incrementStock(int quantity) {
+        this.stock += quantity;
     }
 
+    /**
+     * Decrement book stock by quantity
+     * @param quantity quantity to be decremented
+     * @throws InsufficientBookStockException when stock is insufficient
+     */
+    public void decrementStock(int quantity) throws InsufficientBookStockException {
+        if (this.stock - quantity < 0) {
+            throw new InsufficientBookStockException(this);
+        }
+
+        this.stock -= quantity;
+    }
 
     public String getAuthor() {
         return author;

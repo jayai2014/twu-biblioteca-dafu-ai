@@ -18,9 +18,10 @@ public class BibliotecaAppTest {
             "id=1|title=Book A|author=Dafu|year=2010|stock=3\n" +
                     "id=2|title=Book B|author=Dafu|year=2011|stock=2\n" +
                     "id=3|title=Book C|author=Dafu|year=2012|stock=1\n";
-    private final String menuOptions = "Enter a number from options below to make a " +
-            "selection: \n" +
+    private final String menuOptions = "Enter an option below:\n" +
             "1 - List of books\n" +
+            "c[book id] - Checkout a book\n" +
+            "r[book id] - Return a book\n" +
             "0 - Quit\n";
 
     @Before
@@ -113,12 +114,37 @@ public class BibliotecaAppTest {
 
         BibliotecaApp.main(null);
 
-        // By removing the welcome message & menu options, book list should be
+        // By removing the welcome message & menu options, error msg should be
         // at the beginning
         assertTrue(outContent.toString()
                 .replace(welcomeMessage, "")
                 .replace(menuOptions, "")
                 .startsWith("Please select a valid option!\n")
+        );
+    }
+
+    /**
+     * Test we are able to checkout a book
+     */
+    @Test
+    public void testShouldBeAbleToCheckoutBook() {
+        // Provide an invalid menu option input to trigger checking out a book
+        // followed by viewing the book list again, and finally quit
+        ByteArrayInputStream input = new ByteArrayInputStream("1\nc1\n1\n0\n".getBytes());
+        System.setIn(input);
+
+        BibliotecaApp.main(null);
+
+        // By removing the welcome message, menu options and initial book list
+        // we should have new book list string (Notice stock=2 for id=1)
+        // as we should have updated the stock of that book
+        assertEquals("id=1|title=Book A|author=Dafu|year=2010|stock=2\n" +
+                        "id=2|title=Book B|author=Dafu|year=2011|stock=2\n" +
+                        "id=3|title=Book C|author=Dafu|year=2012|stock=1\n",
+                outContent.toString()
+                .replace(welcomeMessage, "")
+                .replace(menuOptions, "")
+                .replace(initialBookListString, "")
         );
     }
 }

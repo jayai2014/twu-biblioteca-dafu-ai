@@ -27,8 +27,10 @@ public class BibliotecaApp {
      * Get a menu of options in string
      */
     public static String getMenuOptions() {
-        return "Enter a number from options below to make a selection: \n" +
+        return "Enter an option below:\n" +
                 "1 - List of books\n" +
+                "c[book id] - Checkout a book\n" +
+                "r[book id] - Return a book\n" +
                 "0 - Quit\n";
     }
 
@@ -41,16 +43,46 @@ public class BibliotecaApp {
 
         Scanner in = new Scanner(System.in);
 
+        // Repeatedly ask user for input unless user chooses to exit
         while (true) {
-            String chosenOption = in.next();
-
-            if (chosenOption.equals("1")) {
-                System.out.print(getAllBooksString());
-            } else if (chosenOption.equals("0")) {
+            if(!processInput(in)) {
                 break;
-            } else {
-                System.out.print(invalidOptionMessage);
             }
+        }
+    }
+
+    /**
+     * Process user input
+     * @param input user input
+     * @return true if user chooses to exit; false otherwise
+     */
+    public static boolean processInput(Scanner input) {
+        String chosenOption = input.next();
+
+        if (chosenOption.equals("1")) {
+            System.out.print(getAllBooksString());
+        } else if (chosenOption.equals("0")) {
+            return false;
+        } else if (chosenOption.startsWith("c")) {
+            processBookCheckout(chosenOption.substring(1));
+        } else {
+            System.out.print(invalidOptionMessage);
+        }
+        return true;
+    }
+
+    /**
+     * Process book checkout
+     * @param bookIdStr book id in string, which will be validated first
+     */
+    public static void processBookCheckout(String bookIdStr) {
+        // todo: error handling for int conversion
+        int bookId = Integer.parseInt(bookIdStr);
+        try {
+            BookManager.getInstance().checkoutBook(1);
+        } catch (InsufficientBookStockException e) {
+            // todo: error handling
+            e.printStackTrace();
         }
     }
 }
