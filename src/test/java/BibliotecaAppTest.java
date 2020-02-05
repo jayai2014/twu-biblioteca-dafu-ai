@@ -253,4 +253,26 @@ public class BibliotecaAppTest {
         );
     }
 
+    /**
+     * Test we are able to return a book successfully
+     * (when book id is valid)
+     */
+    @Test
+    public void testShouldBeAbleToReturnBookSuccessfully() {
+        // Provide an valid menu option input to trigger returning a book
+        // then quit
+        ByteArrayInputStream input = new ByteArrayInputStream("1\nr1\n0\n".getBytes());
+        System.setIn(input);
+
+        BibliotecaApp.main(null);
+
+        // By removing the welcome message, menu options and initial book list
+        // we should have the success message left
+        assertEquals(returnSuccessMessage,
+                outContent.toString()
+                        .replace(welcomeMessage, "")
+                        .replace(menuOptions, "")
+                        .replace(initialBookListString, "")
+        );
+    }
 }
