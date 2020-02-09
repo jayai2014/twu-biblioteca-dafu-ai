@@ -16,4 +16,6 @@ public class Messages {
             "Thank you! Enjoy the movie\n";
     static final String CHECKOUT_MOVIE_FAILURE_MESSAGE =
             "Sorry, that movie is not available\n";
+    static final String INVALID_USER_CREDENTIALS_MESSAGE =
+            "Invalid user credentials\n";
 }

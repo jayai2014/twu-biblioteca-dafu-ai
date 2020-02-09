@@ -6,7 +6,7 @@ import java.util.Map;
 public abstract class ItemInventory<I extends Item> {
     protected Map<Integer, ItemStock<I>> inv = new HashMap<>();
 
-    public void loadData(List<ItemStock<I>> itemStocks) {
+    public void loadItemStockData(List<ItemStock<I>> itemStocks) {
         for (ItemStock<I> itemStock: itemStocks) {
             this.inv.put(itemStock.getItem().getId(), itemStock);
         }

@@ -20,10 +20,10 @@ public class ItemInventoryTest {
         TestItemInventory inventory = new TestItemInventory();
         List<ItemStock<TestItem>> itemStocks = new ArrayList<>();
         itemStocks.add(new ItemStock<>(new TestItem(1, "A"), 1));
-        inventory.loadData(itemStocks);
+        inventory.loadItemStockData(itemStocks);
 
         itemStocks.add(new ItemStock<>(new TestItem(2, "B"), 1));
-        inventory.loadData(itemStocks);
+        inventory.loadItemStockData(itemStocks);
         assertArrayEquals(itemStocks.toArray(), inventory.findAll().toArray());
     }
 
@@ -32,7 +32,7 @@ public class ItemInventoryTest {
         TestItemInventory inventory = new TestItemInventory();
         List<ItemStock<TestItem>> itemStocks = new ArrayList<>();
         itemStocks.add(new ItemStock<>(new TestItem(1, "A"), 1));
-        inventory.loadData(itemStocks);
+        inventory.loadItemStockData(itemStocks);
         assertArrayEquals(itemStocks.toArray(), inventory.findAll().toArray());
     }
 
@@ -42,7 +42,7 @@ public class ItemInventoryTest {
         TestItemInventory inventory = new TestItemInventory();
         List<ItemStock<TestItem>> itemStocks = new ArrayList<>();
         itemStocks.add(new ItemStock<>(new TestItem(1, "A"), 1));
-        inventory.loadData(itemStocks);
+        inventory.loadItemStockData(itemStocks);
         inventory.checkoutItem(1);
 
         assertSame(0, inventory.getItemStock(1).getStockQty());
@@ -54,7 +54,7 @@ public class ItemInventoryTest {
         TestItemInventory inventory = new TestItemInventory();
         List<ItemStock<TestItem>> itemStocks = new ArrayList<>();
         itemStocks.add(new ItemStock<>(new TestItem(1, "A"), 1));
-        inventory.loadData(itemStocks);
+        inventory.loadItemStockData(itemStocks);
         inventory.checkoutItem(1);
 
         assertSame(0, inventory.getItemStock(1).getStockQty());

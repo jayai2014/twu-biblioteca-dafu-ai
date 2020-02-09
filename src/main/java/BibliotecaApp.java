@@ -1,17 +1,28 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class BibliotecaApp {
-    private BookInventory bookInventory = new BookInventory();
+    private UserRegistry userRegistry = new UserRegistry();
+    private BookInventory bookInventory = new BookInventory(userRegistry);
     private MovieInventory movieInventory = new MovieInventory();
 
     public void loadBooksData(List<ItemStock<Book>> books) {
-        bookInventory.loadData(books);
+        bookInventory.loadItemStockData(books);
     }
 
     public void loadMoviesData(List<ItemStock<Movie>> movies) {
-        movieInventory.loadData(movies);
+        movieInventory.loadItemStockData(movies);
+    }
+
+    public void loadUsersData(List<User> users) {
+        userRegistry.loadData(users);
+    }
+
+    public void loadUserCheckoutData(Map<User, List<BookCheckout>> userCheckouts) {
+        bookInventory.loadCheckoutData(userCheckouts);
+    }
+
+    public UserRole getCurrentUserRole() {
+        return userRegistry.getCurrentUserRole();
     }
 
     public String getAllBooksString() {
@@ -23,6 +34,12 @@ public class BibliotecaApp {
     public String getAllMoviesString() {
         List<ItemStock<Movie>> movies = movieInventory.findAll();
         ItemsToStringHelper<Movie> helper = new ItemsToStringHelper<>(movies);
+        return helper.listToString();
+    }
+
+    public String getAllBookCheckoutsString() {
+        List<BookCheckout> bookCheckouts = bookInventory.getUserCheckouts();
+        BookCheckoutsToStringHelper helper = new BookCheckoutsToStringHelper(bookCheckouts);
         return helper.listToString();
     }
 
@@ -89,33 +106,93 @@ public class BibliotecaApp {
         System.out.print(Messages.CHECKOUT_MOVIE_SUCCESS_MESSAGE);
     }
 
+    public boolean processLogin(String username, String password) {
+        try {
+            userRegistry.login(username, password);
+        } catch (InvalidCredentialsException e) {
+            System.out.print(Messages.INVALID_USER_CREDENTIALS_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
     /**
      * @return true if user chooses to exit; false otherwise
      */
     public static boolean processInput(Scanner input, BibliotecaApp app) {
         String chosenOption = input.next();
 
+        MenuOption chosenMenuOption;
         if (chosenOption.equals(MenuOption.QUIT.getSymbol())) {
-            return false;
+            chosenMenuOption = MenuOption.QUIT;
+        } else if (chosenOption.equals(MenuOption.LOGIN.getSymbol())) {
+            chosenMenuOption = MenuOption.LOGIN;
         } else if (chosenOption.equals(MenuOption.LIST_BOOKS.getSymbol())) {
-            System.out.print(app.getAllBooksString());
+            chosenMenuOption = MenuOption.LIST_BOOKS;
         } else if (chosenOption.startsWith(MenuOption.CHECKOUT_BOOK.getSymbol())) {
-            app.processBookCheckout(chosenOption.substring(2));
+            chosenMenuOption = MenuOption.CHECKOUT_BOOK;
         } else if (chosenOption.startsWith(MenuOption.RETURN_BOOK.getSymbol())) {
-            app.processBookReturn(chosenOption.substring(2));
+            chosenMenuOption = MenuOption.RETURN_BOOK;
         } else if (chosenOption.startsWith(MenuOption.LIST_MOVIES.getSymbol())) {
-            System.out.print(app.getAllMoviesString());
+            chosenMenuOption = MenuOption.LIST_MOVIES;
         } else if (chosenOption.startsWith(MenuOption.CHECKOUT_MOVIE.getSymbol())) {
-            app.processMovieCheckout(chosenOption.substring(2));
+            chosenMenuOption = MenuOption.CHECKOUT_MOVIE;
+        } else if (chosenOption.startsWith(MenuOption.LIST_BOOK_CHECKOUTS.getSymbol())) {
+            chosenMenuOption = MenuOption.LIST_BOOK_CHECKOUTS;
         } else {
             System.out.print(Messages.INVALID_OPTION_MESSAGE);
+            return true;
         }
+
+        // Check permission
+        UserRole requiredRole = chosenMenuOption.getUserRole();
+        if (requiredRole != null && requiredRole != app.getCurrentUserRole()) {
+            System.out.print(Messages.INVALID_OPTION_MESSAGE);
+            return true;
+        }
+
+        switch (chosenMenuOption) {
+            case QUIT:
+                return false;
+            case LOGIN:
+                System.out.println("Enter username (xxx-xxxx):");
+                String username = input.next();
+                System.out.println("Enter password:");
+                String password = input.next();
+                if (app.processLogin(username, password)) {
+                    // Print updated menu after successful login
+                    System.out.print(MenuOption.getAllOptionsString(app));
+                }
+                break;
+            case LIST_BOOKS:
+                System.out.print(app.getAllBooksString());
+                break;
+            case CHECKOUT_BOOK:
+                app.processBookCheckout(chosenOption.substring(2));
+                break;
+            case RETURN_BOOK:
+                app.processBookReturn(chosenOption.substring(2));
+                break;
+            case LIST_MOVIES:
+                System.out.print(app.getAllMoviesString());
+                break;
+            case CHECKOUT_MOVIE:
+                app.processMovieCheckout(chosenOption.substring(2));
+                break;
+            case LIST_BOOK_CHECKOUTS:
+                System.out.print(app.getAllBookCheckoutsString());
+                break;
+            default:
+                break;
+        }
+
         return true;
     }
 
     public static void loadData(BibliotecaApp app) {
         List<ItemStock<Book>> books = new ArrayList<>();
-        books.add(new ItemStock<>(new Book(1, "Book A", "Dafu", 2010), 3));
+        Book book1 = new Book(1, "Book A", "Dafu", 2010);
+        books.add(new ItemStock<>(book1, 3));
         books.add(new ItemStock<>(new Book(2, "Book B", "Dafu", 2011), 2));
         books.add(new ItemStock<>(new Book(3, "Book C", "Dafu", 2012), 1));
         app.loadBooksData(books);
@@ -126,15 +203,28 @@ public class BibliotecaApp {
         movies.add(new ItemStock<>(new Movie(2, "Movie B", 2012,
                 "Dafu", 10), 2));
         app.loadMoviesData(movies);
+
+        List<User> users = new ArrayList<>();
+        users.add(new Librarian("000-0001", "123", "Libraian Dafu"));
+        Customer customer = new Customer("000-0002", "123", "User Dafu");
+        users.add(customer);
+        app.loadUsersData(users);
+
+        Map<User, List<BookCheckout>> userCheckouts = new HashMap<>();
+        List<BookCheckout> checkouts = new ArrayList<>();
+        checkouts.add(new BookCheckout(customer, book1));
+        userCheckouts.put(customer, checkouts);
+        app.loadUserCheckoutData(userCheckouts);
     }
 
     public static void main(String[] args) {
-        System.out.print(Messages.WELCOME_MESSAGE);
-        System.out.print(MenuOption.getAllOptionsString());
-
-        Scanner in = new Scanner(System.in);
         BibliotecaApp app = new BibliotecaApp();
         loadData(app);
+
+        System.out.print(Messages.WELCOME_MESSAGE);
+        System.out.print(MenuOption.getAllOptionsString(app));
+
+        Scanner in = new Scanner(System.in);
 
         // Repeatedly ask user for input unless user chooses to exit
         while (true) {

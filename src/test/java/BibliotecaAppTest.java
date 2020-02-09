@@ -120,7 +120,7 @@ public class BibliotecaAppTest {
         assertEquals("Movie{id=1, title=Book A, year=2011, director=Dafu, rating=unrated}, stock=0\n",
                 app.getAllMoviesString());
 
-        assertEquals(Messages.CHECKOUT_BOOK_SUCCESS_MESSAGE, outContent.toString());
+        assertEquals(Messages.CHECKOUT_MOVIE_SUCCESS_MESSAGE, outContent.toString());
     }
 
 
@@ -133,9 +133,9 @@ public class BibliotecaAppTest {
         List<ItemStock<Movie>> movies = new ArrayList<>();
         movies.add(new ItemStock<>(new Movie(1, "Book A", 2011, "Dafu"), 0));
         app.loadMoviesData(movies);
-        app.processBookCheckout("1");
+        app.processMovieCheckout("1");
 
-        assertEquals(Messages.CHECKOUT_BOOK_FAILURE_MESSAGE, outContent.toString());
+        assertEquals(Messages.CHECKOUT_MOVIE_FAILURE_MESSAGE, outContent.toString());
     }
 
     /**
@@ -150,10 +150,10 @@ public class BibliotecaAppTest {
 
         // Two cases
         app.processMovieCheckout("0");
-        assertEquals(Messages.CHECKOUT_BOOK_FAILURE_MESSAGE, outContent.toString());
+        assertEquals(Messages.CHECKOUT_MOVIE_FAILURE_MESSAGE, outContent.toString());
 
         outContent.reset();
         app.processMovieCheckout("a");
-        assertEquals(Messages.CHECKOUT_BOOK_FAILURE_MESSAGE, outContent.toString());
+        assertEquals(Messages.CHECKOUT_MOVIE_FAILURE_MESSAGE, outContent.toString());
     }
 }
