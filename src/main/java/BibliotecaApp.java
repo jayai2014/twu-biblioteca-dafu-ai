@@ -20,7 +20,7 @@ public class BibliotecaApp {
         return helper.listToString();
     }
 
-    private String getAllMoviesString() {
+    public String getAllMoviesString() {
         List<ItemStock<Movie>> movies = movieInventory.findAll();
         ItemsToStringHelper<Movie> helper = new ItemsToStringHelper<>(movies);
         return helper.listToString();
@@ -32,19 +32,19 @@ public class BibliotecaApp {
             bookId = Integer.parseInt(bookIdStr);
         } catch (NumberFormatException e) {
             // We need to ensure the book id is an integer
-            System.out.print(Messages.CHECKOUT_FAILURE_MESSAGE);
+            System.out.print(Messages.CHECKOUT_BOOK_FAILURE_MESSAGE);
             return;
         }
 
         try {
-            bookInventory.checkoutBook(bookId);
+            bookInventory.checkoutItem(bookId);
         } catch (InsufficientItemStockException | ItemNotExistException e) {
             // We also need to ensure book id exist and stock is sufficient
-            System.out.print(Messages.CHECKOUT_FAILURE_MESSAGE);
+            System.out.print(Messages.CHECKOUT_BOOK_FAILURE_MESSAGE);
             return;
         }
 
-        System.out.print(Messages.CHECKOUT_SUCCESS_MESSAGE);
+        System.out.print(Messages.CHECKOUT_BOOK_SUCCESS_MESSAGE);
     }
 
     public void processBookReturn(String bookIdStr) {
@@ -53,7 +53,7 @@ public class BibliotecaApp {
             bookId = Integer.parseInt(bookIdStr);
         } catch (NumberFormatException e) {
             // We need to ensure the book id is an integer
-            System.out.print(Messages.RETURN_FAILURE_MESSAGE);
+            System.out.print(Messages.RETURN_BOOK_FAILURE_MESSAGE);
             return;
         }
 
@@ -61,11 +61,32 @@ public class BibliotecaApp {
             bookInventory.returnBook(bookId);
         } catch (ItemNotExistException e) {
             // We also need to ensure book id exist and stock is sufficient
-            System.out.print(Messages.RETURN_FAILURE_MESSAGE);
+            System.out.print(Messages.RETURN_BOOK_FAILURE_MESSAGE);
             return;
         }
 
-        System.out.print(Messages.RETURN_SUCCESS_MESSAGE);
+        System.out.print(Messages.RETURN_BOOK_SUCCESS_MESSAGE);
+    }
+
+    public void processMovieCheckout(String movieIdStr) {
+        int movieId;
+        try {
+            movieId = Integer.parseInt(movieIdStr);
+        } catch (NumberFormatException e) {
+            // We need to ensure the movie id is an integer
+            System.out.print(Messages.CHECKOUT_MOVIE_FAILURE_MESSAGE);
+            return;
+        }
+
+        try {
+            movieInventory.checkoutItem(movieId);
+        } catch (InsufficientItemStockException | ItemNotExistException e) {
+            // We also need to ensure movie id exist and stock is sufficient
+            System.out.print(Messages.CHECKOUT_MOVIE_FAILURE_MESSAGE);
+            return;
+        }
+
+        System.out.print(Messages.CHECKOUT_MOVIE_SUCCESS_MESSAGE);
     }
 
     /**
@@ -79,11 +100,13 @@ public class BibliotecaApp {
         } else if (chosenOption.equals(MenuOption.LIST_BOOKS.getSymbol())) {
             System.out.print(app.getAllBooksString());
         } else if (chosenOption.startsWith(MenuOption.CHECKOUT_BOOK.getSymbol())) {
-            app.processBookCheckout(chosenOption.substring(1));
+            app.processBookCheckout(chosenOption.substring(2));
         } else if (chosenOption.startsWith(MenuOption.RETURN_BOOK.getSymbol())) {
-            app.processBookReturn(chosenOption.substring(1));
+            app.processBookReturn(chosenOption.substring(2));
         } else if (chosenOption.startsWith(MenuOption.LIST_MOVIES.getSymbol())) {
             System.out.print(app.getAllMoviesString());
+        } else if (chosenOption.startsWith(MenuOption.CHECKOUT_MOVIE.getSymbol())) {
+            app.processMovieCheckout(chosenOption.substring(2));
         } else {
             System.out.print(Messages.INVALID_OPTION_MESSAGE);
         }
@@ -100,7 +123,7 @@ public class BibliotecaApp {
         List<ItemStock<Movie>> movies = new ArrayList<>();
         movies.add(new ItemStock<>(new Movie(1, "Movie A", 2011,
                 "Dafu", 10), 1));
-        movies.add(new ItemStock<>(new Movie(1, "Movie B", 2012,
+        movies.add(new ItemStock<>(new Movie(2, "Movie B", 2012,
                 "Dafu", 10), 2));
         app.loadMoviesData(movies);
     }

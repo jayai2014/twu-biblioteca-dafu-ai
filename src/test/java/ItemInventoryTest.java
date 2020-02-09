@@ -3,7 +3,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 public class ItemInventoryTest {
     private static class TestItem extends Item {
@@ -34,5 +34,29 @@ public class ItemInventoryTest {
         itemStocks.add(new ItemStock<>(new TestItem(1, "A"), 1));
         inventory.loadData(itemStocks);
         assertArrayEquals(itemStocks.toArray(), inventory.findAll().toArray());
+    }
+
+    @Test
+    public void testCheckoutItemShouldDecrementStockQtyWhenIdIsValid()
+            throws InsufficientItemStockException, ItemNotExistException {
+        TestItemInventory inventory = new TestItemInventory();
+        List<ItemStock<TestItem>> itemStocks = new ArrayList<>();
+        itemStocks.add(new ItemStock<>(new TestItem(1, "A"), 1));
+        inventory.loadData(itemStocks);
+        inventory.checkoutItem(1);
+
+        assertSame(0, inventory.getItemStock(1).getStockQty());
+    }
+
+    @Test
+    public void testCheckoutItemShouldThrowExceptionWhenIdIsInvalid()
+            throws InsufficientItemStockException, ItemNotExistException {
+        TestItemInventory inventory = new TestItemInventory();
+        List<ItemStock<TestItem>> itemStocks = new ArrayList<>();
+        itemStocks.add(new ItemStock<>(new TestItem(1, "A"), 1));
+        inventory.loadData(itemStocks);
+        inventory.checkoutItem(1);
+
+        assertSame(0, inventory.getItemStock(1).getStockQty());
     }
 }
