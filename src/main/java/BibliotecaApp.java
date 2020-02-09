@@ -25,6 +25,10 @@ public class BibliotecaApp {
         return userRegistry.getCurrentUserRole();
     }
 
+    public String getCurrentUserProfile() {
+        return userRegistry.getCurrentUser().toString();
+    }
+
     public String getAllBooksString() {
         List<ItemStock<Book>> books = bookInventory.findAll();
         ItemsToStringHelper<Book> helper = new ItemsToStringHelper<>(books);
@@ -139,6 +143,8 @@ public class BibliotecaApp {
             chosenMenuOption = MenuOption.CHECKOUT_MOVIE;
         } else if (chosenOption.startsWith(MenuOption.LIST_BOOK_CHECKOUTS.getSymbol())) {
             chosenMenuOption = MenuOption.LIST_BOOK_CHECKOUTS;
+        } else if (chosenOption.equals(MenuOption.VIEW_PROFILE.getSymbol())) {
+            chosenMenuOption = MenuOption.VIEW_PROFILE;
         } else {
             System.out.print(Messages.INVALID_OPTION_MESSAGE);
             return true;
@@ -182,6 +188,9 @@ public class BibliotecaApp {
             case LIST_BOOK_CHECKOUTS:
                 System.out.print(app.getAllBookCheckoutsString());
                 break;
+            case VIEW_PROFILE:
+                System.out.println(app.getCurrentUserProfile());
+                break;
             default:
                 break;
         }
@@ -206,7 +215,10 @@ public class BibliotecaApp {
 
         List<User> users = new ArrayList<>();
         users.add(new Librarian("000-0001", "123", "Libraian Dafu"));
-        Customer customer = new Customer("000-0002", "123", "User Dafu");
+        Customer customer = new Customer("000-0002", "123",
+                "User Dafu",
+                "dafu.ai819@gmail.com",
+                "0478057208");
         users.add(customer);
         app.loadUsersData(users);
 

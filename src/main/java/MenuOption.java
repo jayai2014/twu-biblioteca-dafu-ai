@@ -10,7 +10,8 @@ public enum MenuOption {
     RETURN_BOOK("rb", "Return a book (e.g. rb1)", UserRole.CUSTOMER),
     LIST_MOVIES("m", "List all movies", null),
     CHECKOUT_MOVIE("cm", "Checkout a movie (e.g. cm1)", null),
-    LIST_BOOK_CHECKOUTS("bc", "List book checkout records", UserRole.LIBRARIAN);
+    LIST_BOOK_CHECKOUTS("bc", "List book checkout records", UserRole.LIBRARIAN),
+    VIEW_PROFILE("vp", "View my user profile", UserRole.CUSTOMER);
 
     private String symbol;
     private String description;
