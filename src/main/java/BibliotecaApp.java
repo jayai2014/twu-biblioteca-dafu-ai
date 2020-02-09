@@ -1,137 +1,123 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class BibliotecaApp {
-    /**
-     * Retrieve welcome message
-     */
-    public static String getWelcomeMessage() {
-        return "Welcome to Biblioteca. Your one-stop-shop for " +
-                "great book titles in Bangalore!\n";
+    private BookInventory bookInventory = new BookInventory();
+    private MovieInventory movieInventory = new MovieInventory();
+
+    public void loadBooksData(List<ItemStock<Book>> books) {
+        bookInventory.loadData(books);
     }
 
-    /**
-     * Retrieve the book list in string representation
-     * @return list of books in string
-     */
-    public static String getAllBooksString() {
-        ArrayList<Book> books = BookManager.getInstance().getAllBooks();
-        StringBuilder booksString = new StringBuilder();
-        for (Book book : books) {
-            booksString.append(book.toString()).append("\n");
+    public void loadMoviesData(List<ItemStock<Movie>> movies) {
+        movieInventory.loadData(movies);
+    }
+
+    public String getAllBooksString() {
+        List<ItemStock<Book>> books = bookInventory.findAll();
+        ItemsToStringHelper<Book> helper = new ItemsToStringHelper<>(books);
+        return helper.listToString();
+    }
+
+    private String getAllMoviesString() {
+        List<ItemStock<Movie>> movies = movieInventory.findAll();
+        ItemsToStringHelper<Movie> helper = new ItemsToStringHelper<>(movies);
+        return helper.listToString();
+    }
+
+    public void processBookCheckout(String bookIdStr) {
+        int bookId;
+        try {
+            bookId = Integer.parseInt(bookIdStr);
+        } catch (NumberFormatException e) {
+            // We need to ensure the book id is an integer
+            System.out.print(Messages.CHECKOUT_FAILURE_MESSAGE);
+            return;
         }
-        return booksString.toString();
-    }
 
-    /**
-     * Get a menu of options in string
-     */
-    public static String getMenuOptions() {
-        return "Enter an option below:\n" +
-                "1 - List of books\n" +
-                "c[book id] - Checkout a book\n" +
-                "r[book id] - Return a book\n" +
-                "0 - Quit\n";
-    }
-
-    private static final String INVALID_OPTION_MESSAGE =
-            "Please select a valid option!\n";
-
-    private static final String CHECKOUT_SUCCESS_MESSAGE =
-            "Thank you! Enjoy the book\n";
-
-    private static final String CHECKOUT_FAILURE_MESSAGE =
-            "Sorry, that book is not available\n";
-
-    private static final String RETURN_SUCCESS_MESSAGE =
-            "Thank you for returning the book\n";
-
-    private static final String RETURN_FAILURE_MESSAGE =
-            "That is not a valid book to return\n";
-
-    public static void main(String[] args) {
-        System.out.print(getWelcomeMessage());
-        System.out.print(getMenuOptions());
-
-        Scanner in = new Scanner(System.in);
-
-        // Repeatedly ask user for input unless user chooses to exit
-        while (true) {
-            if(!processInput(in)) {
-                break;
-            }
+        try {
+            bookInventory.checkoutBook(bookId);
+        } catch (InsufficientItemStockException | ItemNotExistException e) {
+            // We also need to ensure book id exist and stock is sufficient
+            System.out.print(Messages.CHECKOUT_FAILURE_MESSAGE);
+            return;
         }
+
+        System.out.print(Messages.CHECKOUT_SUCCESS_MESSAGE);
+    }
+
+    public void processBookReturn(String bookIdStr) {
+        int bookId;
+        try {
+            bookId = Integer.parseInt(bookIdStr);
+        } catch (NumberFormatException e) {
+            // We need to ensure the book id is an integer
+            System.out.print(Messages.RETURN_FAILURE_MESSAGE);
+            return;
+        }
+
+        try {
+            bookInventory.returnBook(bookId);
+        } catch (ItemNotExistException e) {
+            // We also need to ensure book id exist and stock is sufficient
+            System.out.print(Messages.RETURN_FAILURE_MESSAGE);
+            return;
+        }
+
+        System.out.print(Messages.RETURN_SUCCESS_MESSAGE);
     }
 
     /**
-     * Process user input
-     * @param input user input
      * @return true if user chooses to exit; false otherwise
      */
-    public static boolean processInput(Scanner input) {
+    public static boolean processInput(Scanner input, BibliotecaApp app) {
         String chosenOption = input.next();
 
-        if (chosenOption.equals("1")) {
-            System.out.print(getAllBooksString());
-        } else if (chosenOption.equals("0")) {
+        if (chosenOption.equals(MenuOption.QUIT.getSymbol())) {
             return false;
-        } else if (chosenOption.startsWith("c")) {
-            processBookCheckout(chosenOption.substring(1));
-        } else if (chosenOption.startsWith("r")) {
-            processBookReturn(chosenOption.substring(1));
+        } else if (chosenOption.equals(MenuOption.LIST_BOOKS.getSymbol())) {
+            System.out.print(app.getAllBooksString());
+        } else if (chosenOption.startsWith(MenuOption.CHECKOUT_BOOK.getSymbol())) {
+            app.processBookCheckout(chosenOption.substring(1));
+        } else if (chosenOption.startsWith(MenuOption.RETURN_BOOK.getSymbol())) {
+            app.processBookReturn(chosenOption.substring(1));
+        } else if (chosenOption.startsWith(MenuOption.LIST_MOVIES.getSymbol())) {
+            System.out.print(app.getAllMoviesString());
         } else {
-            System.out.print(INVALID_OPTION_MESSAGE);
+            System.out.print(Messages.INVALID_OPTION_MESSAGE);
         }
         return true;
     }
 
-    /**
-     * Process book checkout
-     * @param bookIdStr book id in string, which will be validated first
-     */
-    public static void processBookCheckout(String bookIdStr) {
-        int bookId;
-        try {
-            bookId = Integer.parseInt(bookIdStr);
-        } catch (NumberFormatException e) {
-            // We need to ensure the book id is an integer
-            System.out.print(CHECKOUT_FAILURE_MESSAGE);
-            return;
-        }
+    public static void loadData(BibliotecaApp app) {
+        List<ItemStock<Book>> books = new ArrayList<>();
+        books.add(new ItemStock<>(new Book(1, "Book A", "Dafu", 2010), 3));
+        books.add(new ItemStock<>(new Book(2, "Book B", "Dafu", 2011), 2));
+        books.add(new ItemStock<>(new Book(3, "Book C", "Dafu", 2012), 1));
+        app.loadBooksData(books);
 
-        try {
-            BookManager.getInstance().checkoutBook(bookId);
-        } catch (InsufficientBookStockException | BookNotExistException e) {
-            // We also need to ensure book id exist and stock is sufficient
-            System.out.print(CHECKOUT_FAILURE_MESSAGE);
-            return;
-        }
-
-        System.out.print(CHECKOUT_SUCCESS_MESSAGE);
+        List<ItemStock<Movie>> movies = new ArrayList<>();
+        movies.add(new ItemStock<>(new Movie(1, "Movie A", 2011,
+                "Dafu", 10), 1));
+        movies.add(new ItemStock<>(new Movie(1, "Movie B", 2012,
+                "Dafu", 10), 2));
+        app.loadMoviesData(movies);
     }
 
-    /**
-     * Process book return
-     * @param bookIdStr book id in string, which will be validated first
-     */
-    public static void processBookReturn(String bookIdStr) {
-        int bookId;
-        try {
-            bookId = Integer.parseInt(bookIdStr);
-        } catch (NumberFormatException e) {
-            // We need to ensure the book id is an integer
-            System.out.print(RETURN_FAILURE_MESSAGE);
-            return;
-        }
+    public static void main(String[] args) {
+        System.out.print(Messages.WELCOME_MESSAGE);
+        System.out.print(MenuOption.getAllOptionsString());
 
-        try {
-            BookManager.getInstance().returnBook(bookId);
-        } catch (BookNotExistException e) {
-            // We also need to ensure book id exist and stock is sufficient
-            System.out.print(RETURN_FAILURE_MESSAGE);
-            return;
-        }
+        Scanner in = new Scanner(System.in);
+        BibliotecaApp app = new BibliotecaApp();
+        loadData(app);
 
-        System.out.print(RETURN_SUCCESS_MESSAGE);
+        // Repeatedly ask user for input unless user chooses to exit
+        while (true) {
+            if(!processInput(in, app)) {
+                break;
+            }
+        }
     }
 }
